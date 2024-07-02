@@ -1,0 +1,35 @@
+[package]
+name = "app"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+default-run = "app"
+edition = "2021"
+rust-version = "1.79"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.5.0", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.5.2", features = [] }
+reqwest = { version = "0.11.22", features = ["json", "blocking"] }
+dotenvy = "0.15.7"
+tokio = { version = "1", features = ["full"] }
+libsql = { git = "https://github.com/tursodatabase/libsql" }
+tracing-subscriber = "0.3"
+tracing = "0.1.40"
+
+[features]
+# this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
+# If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
+# DO NOT REMOVE!!
+custom-protocol = [ "tauri/custom-protocol" ]
+
+[patch.crates-io]
+sqlite3-parser = { git = "https://github.com/LucioFranco/lemon-rs" }
