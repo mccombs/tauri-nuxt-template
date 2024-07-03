@@ -12,12 +12,14 @@ rust-version = "1.79"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.0", features = [] }
+tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.2", features = [] }
+tauri = { version = "2.0.0-beta", features = ["devtools"] }
+tauri-plugin-shell = "2.0.0-beta"
+
 reqwest = { version = "0.11.22", features = ["json", "blocking"] }
 dotenvy = "0.15.7"
 tokio = { version = "1", features = ["full"] }
@@ -33,3 +35,6 @@ custom-protocol = [ "tauri/custom-protocol" ]
 
 [patch.crates-io]
 sqlite3-parser = { git = "https://github.com/LucioFranco/lemon-rs" }
+
+[target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
+tauri-plugin-updater = "2.0.0-beta.9"
