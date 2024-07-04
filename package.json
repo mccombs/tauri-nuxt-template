@@ -1,25 +1,26 @@
 {
-  "name": "nuxt-app",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "tauri": "tauri"
-  },
-  "devDependencies": {
-    "@libsql/client": "^0.7.0",
-    "@nuxt/devtools": "latest",
-    "@tauri-apps/api": "^=2.0.0-beta.0",
-    "@tauri-apps/cli": "^2.0.0-beta.21",
-    "@tauri-apps/plugin-shell": "^2.0.0-beta.7",
-    "nuxt": "^3.11.2",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
-  },
-  "dependencies": { "@tauri-apps/plugin-updater": "^2.0.0-beta.6" },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+    "name": "nuxt-app",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "tauri": "tauri"
+    },
+    "dependencies": {
+        "@libsql/client": "^0.7.0",
+        "@nuxt/devtools": "latest",
+        "@tauri-apps/api": "^=2.0.0-beta.0",
+        "@tauri-apps/cli": "^2.0.0-beta.21",
+        "@tauri-apps/plugin-shell": "^2.0.0-beta.7",
+        "nuxt": "^3.11.2",
+        "vue": "^3.4.21",
+        "vue-router": "^4.3.0",
+        "@tauri-apps/plugin-log": "^2.0.0-beta.7",
+        "@tauri-apps/plugin-updater": "^2.0.0-beta.6"
+    },
+    "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
