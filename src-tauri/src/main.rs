@@ -1,5 +1,6 @@
 use dotenvy::dotenv;
 use libsql::Builder;
+// use std::time::Duration;
 use serde::{Deserialize, Serialize};
 // use tauri_plugin_log::{Target, TargetKind};
 use tauri::Manager;
@@ -30,62 +31,63 @@ pub struct Item {
     id: i32,
     text: String,
 }
-#[tauri::command]
-async fn test_command() -> String {
-    return "Hello from Rust".to_string();
-}
-
 
 #[tauri::command]
-async fn get_all_notes() -> Result<Vec<Item>> {
-    info!("PUNCHOUT: Getting all notes");
-    dotenv().ok();
+async fn test_sync() -> Result<Vec<Item>> {
+    // tracing_subscriber::fmt::init();
+    dotenv().ok().expect("ERROR: Failed to load dotenv");
 
-    // for (key, value) in env::vars() {
-    //     println!("PUNCHOUT - {}: {}", key, value);
-    // }
-    let db_path = env::var("DB_PATH").unwrap();
-    let sync_url = env::var("TURSO_SYNC_URL").unwrap();
-    let auth_token = env::var("TURSO_AUTH_TOKEN").unwrap();
+    info!("PUNCHOUT: Starting test_sync");
 
+    let db_dir = tempfile::tempdir().unwrap();
+    let db_file = db_dir.path().join("data.db");
+    println!("Database {}", db_file.display());
 
-    let db = Builder::new_remote_replica(db_path, sync_url.to_string(), auth_token.to_string())
-        .build()
-        .await
-        .unwrap();
-    // db.sync().await.unwrap();
+    let url = std::env::var("LIBSQL_URL").unwrap();
+    let auth_token = std::env::var("LIBSQL_AUTH_TOKEN").unwrap();
 
+    let db =   Builder::new_remote_replica(&db_file, url, auth_token)
+    .build()
+    .await
+    .unwrap();
 
     let conn = db.connect().unwrap();
-    
-    // info!("PUNCHOUT: Connected to database: {:?}", conn);
 
-    let mut results = conn.query("SELECT * FROM states", ()).await.unwrap();
+    let f = db.sync().await.unwrap();
+    println!("inital sync complete, frame no: {f:?}");
+    info!("PUNCHOUT: inital sync complete, frame no: {f:?}");
 
-    let mut items: Vec<Item> = Vec::new();
-    while let Ok(Some(row)) = results.next().await {
-        let item: Item = Item {
-            id: row.get(0).unwrap(),
-            text: row.get(1).unwrap(),
-        };
-        items.push(item);
-    }
+    conn.execute("CREATE TABLE IF NOT EXISTS foo (x TEXT)", ())
+        .await
+        .unwrap();
+
+    db.sync().await.unwrap();
+        let mut items: Vec<Item> = Vec::new();
+
+
+        let mut results = conn.query("SELECT * FROM states", ()).await.unwrap();
+
+        while let Ok(Some(row)) = results.next().await {
+            let item: Item = Item {
+                id: row.get(0).unwrap(),
+                text: row.get(1).unwrap(),
+            };
+            items.push(item);
+        }
+        
     info!("{:?}", items);
 
     Ok(items)
+
+
 }
 
+
 fn main() {
-    // tracing_subscriber::fmt::init();
     let devtools = tauri_plugin_devtools::init();
 
+
     tauri::Builder::default()
-        // .plugin(tauri_plugin_updater::Builder::new().build())
-        // .plugin(tauri_plugin_log::Builder::new().targets([
-        //     Target::new(TargetKind::Stdout),
-        //     Target::new(TargetKind::LogDir { file_name: None }),
-        //     Target::new(TargetKind::Webview),
-        // ]).build())
         .plugin(devtools)
         .plugin(tauri_plugin_shell::init())
         .setup(|_app| {
@@ -97,7 +99,7 @@ fn main() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![get_all_notes, test_command])
+        .invoke_handler(tauri::generate_handler![test_sync])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

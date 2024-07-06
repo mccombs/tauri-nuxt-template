@@ -1,26 +1,24 @@
 <script setup lang="ts">
-console.log("Hello from Vue 3!");
+console.log("Hello from Nuxt and Vue 3!");
 import { onMounted, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 
-async function getAllItems() {
+async function getAllItems(): Promise<Array<any>> {
     console.log("Fetching items...");
     try {
-        const test = await invoke("test_command");
-        console.log("Test command:", test);
+        const testSync = await invoke("test_sync");
+        console.log("test_sync:", testSync);
 
-        const response = await invoke("get_all_notes");
-        console.log("Items retrieved:", response);
+        return testSync as Array<any>;
 
-        return response;
-    } catch (error) {
+        } catch (error: any) {
         console.error("Error retrieving items:", error);
-        return null;
+        return [];
     }
 }
 
 // Usage example
-const items = ref([]);
+const items = ref<Array<any>>([]);
 
 async function fetchItems() {
     items.value = await getAllItems();
@@ -34,13 +32,12 @@ onMounted(() => {
 <template>
     <div>
         <h1>Items</h1>
-
+        <p v-if="items.length === 0">No items found. If you see this... something went wrong.</p>
         <ul>
             <li v-for="item in items" :key="item.id">
                 {{ item.text }}
             </li>
         </ul>
-        ===
         <!-- <NuxtWelcome /> -->
     </div>
 </template>
